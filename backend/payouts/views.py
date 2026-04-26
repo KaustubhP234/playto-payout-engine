@@ -57,7 +57,6 @@ class PayoutListCreateView(APIView):
     def post(self, request, merchant_id):
         merchant = get_object_or_404(Merchant, id=merchant_id)
 
-        # --- Validate idempotency key header ---
         idempotency_key = request.headers.get('Idempotency-Key', '').strip()
         if not idempotency_key:
             return Response(
@@ -65,7 +64,6 @@ class PayoutListCreateView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # --- Validate request body ---
         serializer = CreatePayoutSerializer(data=request.data)
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -92,12 +90,15 @@ class PayoutListCreateView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        # Enqueue background task
-if created:
-    try:
-        process_payout.delay(str(payout.id))
-    except Exception:
-        pass  # Celery unavailable on free tier — payout created, worker not running
+        if created:
+            try:
+                process_payout.delay(str(payout.id))
+            except Exception:
+                pass
+
+        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(PayoutSerializer(payout).data, status=response_status)
+
 
 class PayoutDetailView(APIView):
     def get(self, request, merchant_id, payout_id):
