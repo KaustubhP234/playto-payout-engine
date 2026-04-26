@@ -13,8 +13,8 @@ Handles merchant ledgers, payout requests, concurrency safety, idempotency, and 
 | Service | URL |
 |---------|-----|
 | Frontend | https://playto-payout-engine-alpha.vercel.app |
-| Backend API | https://playto-payout-engine-0aut.onrender.com |
-| API Base | https://playto-payout-engine-0aut.onrender.com/api/v1 |
+| Backend API |  https://playto-payout-engine-0aut.onrender.com/api/v1/merchants/ |
+| API Base | https://playto-payout-engine-0aut.onrender.com/api/v1/merchants/ |
 
 > Note: Backend is on Render free tier. First request may take 50 seconds to wake up.
 
