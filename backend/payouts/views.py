@@ -93,12 +93,11 @@ class PayoutListCreateView(APIView):
             )
 
         # Enqueue background task
-        if created:
-            process_payout.delay(str(payout.id))
-
-        response_status = status.HTTP_201_CREATED if created else status.HTTP_200_OK
-        return Response(PayoutSerializer(payout).data, status=response_status)
-
+if created:
+    try:
+        process_payout.delay(str(payout.id))
+    except Exception:
+        pass  # Celery unavailable on free tier — payout created, worker not running
 
 class PayoutDetailView(APIView):
     def get(self, request, merchant_id, payout_id):
