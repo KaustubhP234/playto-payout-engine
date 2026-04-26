@@ -105,3 +105,29 @@ class PayoutDetailView(APIView):
         merchant = get_object_or_404(Merchant, id=merchant_id)
         payout = get_object_or_404(Payout, id=payout_id, merchant=merchant)
         return Response(PayoutSerializer(payout).data)
+class ProcessPayoutsView(APIView):
+    """
+    One-time endpoint to manually process pending payouts.
+    Used for demo purposes on free tier without Celery.
+    """
+    def post(self, request):
+        from django.db import transaction
+        from django.utils import timezone
+
+        pending = Payout.objects.filter(status=Payout.PENDING)
+        count = pending.count()
+
+        for payout in pending:
+            with transaction.atomic():
+                payout.status = Payout.COMPLETED
+                payout.processed_at = timezone.now()
+                payout.save()
+                LedgerEntry.objects.create(
+                    merchant=payout.merchant,
+                    entry_type=LedgerEntry.DEBIT,
+                    amount_paise=payout.amount_paise,
+                    description=f"Payout to {payout.bank_account_id}",
+                    reference_id=str(payout.id),
+                )
+
+        return Response({'processed': count})
