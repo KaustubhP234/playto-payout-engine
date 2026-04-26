@@ -106,6 +106,7 @@ CELERY_BEAT_SCHEDULE = {
 # --- CORS ---
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://playto-payout-engine.vercel.app",  # your actual Vercel URL
 ]
 CORS_ALLOW_HEADERS = [
     "accept",
