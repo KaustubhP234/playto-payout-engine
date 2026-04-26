@@ -1,5 +1,6 @@
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -17,13 +18,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_celery_results',
     'django_celery_beat',
-    'corsheaders', 
-
+    'corsheaders',
     'payouts',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',   
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,17 +55,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Database ---
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DATABASE_URL').split('/')[-1],
-        'USER': config('DATABASE_URL').split('://')[1].split(':')[0],
-        'PASSWORD': config('DATABASE_URL').split(':')[2].split('@')[0],
-        'HOST': config('DATABASE_URL').split('@')[1].split(':')[0],
-        'PORT': config('DATABASE_URL').split(':')[-1].split('/')[0],
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=False,
+    )
 }
 
-# --- Password Validation ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -90,6 +86,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
     ],
 }
+
 # --- Celery ---
 CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = 'django-db'
@@ -99,12 +96,10 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
 # --- Celery Beat Schedule ---
-from celery.schedules import crontab
-
 CELERY_BEAT_SCHEDULE = {
     'retry-stuck-payouts-every-30s': {
         'task': 'payouts.tasks.retry_stuck_payouts',
-        'schedule': 30.0,  # every 30 seconds
+        'schedule': 30.0,
     },
 }
 
@@ -122,5 +117,5 @@ CORS_ALLOW_HEADERS = [
     "user-agent",
     "x-csrftoken",
     "x-requested-with",
-    "idempotency-key",  # ← this is the missing piece
+    "idempotency-key",
 ]
