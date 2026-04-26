@@ -1,6 +1,5 @@
 # Playto Payout Engine
 
-<<<<<<< HEAD
 A production-grade payout engine built for the Playto Founding Engineer Challenge.
 Handles merchant ledgers, payout requests, concurrency safety, idempotency, and async processing.
 
@@ -18,12 +17,10 @@ Handles merchant ledgers, payout requests, concurrency safety, idempotency, and 
 
 > Note: Backend is on Render free tier. First request may take 50 seconds to wake up.
 
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 ---
 
 ## Tech Stack
 
-<<<<<<< HEAD
 - **Backend:** Django + Django REST Framework
 - **Database:** PostgreSQL (all money in paise as BigIntegerField)
 - **Queue:** Celery + Redis
@@ -58,7 +55,6 @@ Handles merchant ledgers, payout requests, concurrency safety, idempotency, and 
 ---
 
 ## Local Setup
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ### Prerequisites
 - Python 3.11+
@@ -66,7 +62,6 @@ Handles merchant ledgers, payout requests, concurrency safety, idempotency, and 
 - Redis
 - Node.js 18+
 
-<<<<<<< HEAD
 ### 1. Clone and create virtual environment
 
 ```bash
@@ -97,18 +92,15 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-<<<<<<< HEAD
 ### 2. Install backend dependencies
 =======
 ### 3. Install backend dependencies
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-<<<<<<< HEAD
 ### 3. Configure environment
 
 ```bash
@@ -126,34 +118,28 @@ cp .env.example .env
 ```
 
 ### 5. Create database and run migrations
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 psql -U postgres -c "CREATE DATABASE playto_db;"
 python manage.py migrate
 ```
 
-<<<<<<< HEAD
 ### 5. Seed merchants
 =======
 ### 6. Seed merchants
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 python manage.py seed_data
 ```
 
-<<<<<<< HEAD
 ### 6. Start Django
 =======
 ### 7. Start Django
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 python manage.py runserver
 ```
 
-<<<<<<< HEAD
 ### 7. Start Celery worker (new terminal)
 
 ```bash
@@ -169,17 +155,14 @@ celery -A config worker --loglevel=info --pool=solo
 ```
 
 ### 9. Start Celery beat (new terminal)
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 celery -A config beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
 ```
 
-<<<<<<< HEAD
 ### 9. Start frontend (new terminal)
 =======
 ### 10. Start frontend (new terminal)
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 
 ```bash
 cd frontend
@@ -197,11 +180,9 @@ Open **http://localhost:5173**
 docker-compose up --build
 ```
 
-<<<<<<< HEAD
 Open **http://localhost:5173** (frontend must be run separately via `npm run dev`)
 
 =======
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 ---
 
 ## API Reference
