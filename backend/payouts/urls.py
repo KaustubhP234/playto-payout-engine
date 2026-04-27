@@ -11,5 +11,4 @@ urlpatterns = [
     # Payouts
     path('merchants/<uuid:merchant_id>/payouts/', views.PayoutListCreateView.as_view()),
     path('merchants/<uuid:merchant_id>/payouts/<uuid:payout_id>/', views.PayoutDetailView.as_view()),
-    path('process-payouts/', views.ProcessPayoutsView.as_view()),
 ]

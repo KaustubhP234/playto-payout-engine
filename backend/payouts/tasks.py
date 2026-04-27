@@ -28,7 +28,7 @@ def process_payout(self, payout_id: str):
             payout = Payout.objects.select_for_update().get(id=payout_id)
 
             # Guard: only process pending payouts
-            if payout.status != Payout.PENDING:
+            if payout.status not in [Payout.PENDING, Payout.PROCESSING]:
                 logger.warning(
                     f"[process_payout] Payout {payout_id} is in status "
                     f"'{payout.status}', skipping."
@@ -160,10 +160,13 @@ def retry_stuck_payouts():
         else:
             # Reset to pending so process_payout can pick it up again
             with transaction.atomic():
-                p = Payout.objects.select_for_update().get(id=payout.id)
-                if p.status == Payout.PROCESSING:
-                    p.status = Payout.PENDING
-                    p.save(update_fields=['status', 'updated_at'])
+                    p = Payout.objects.select_for_update().get(id=payout.id)
+                    if p.status == Payout.PROCESSING:
+                        # Reset attempt count and re-queue without changing status
+                         # process_payout handles processing → completed/failed
+                        p.attempt_count += 1
+                        p.save(update_fields=['attempt_count', 'updated_at'])
+
 
             # Exponential backoff: 2^attempt_count seconds
             countdown = 2 ** payout.attempt_count

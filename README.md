@@ -85,7 +85,6 @@ python -m venv venv
 # Windows:
 .\venv\Scripts\Activate.ps1
 
->>>>>>> 8953c7c (docs: update README with live deployment URLs)
 # Mac/Linux:
 source venv/bin/activate
 ```
@@ -195,7 +194,6 @@ Open **http://localhost:5173** (frontend must be run separately via `npm run dev
 | POST | `/api/v1/merchants/:id/payouts/` | Create payout |
 | GET | `/api/v1/merchants/:id/payouts/:pid/` | Payout detail |
 
-<<<<<<< HEAD
 ### Create Payout
 =======
 ### Create Payout Request
