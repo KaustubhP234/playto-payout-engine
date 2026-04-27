@@ -116,3 +116,25 @@ class PayoutDetailView(APIView):
         merchant = get_object_or_404(Merchant, id=merchant_id)
         payout = get_object_or_404(Payout, id=payout_id, merchant=merchant)
         return Response(PayoutSerializer(payout).data)
+    
+class ProcessPayoutsView(APIView):
+    def post(self, request):
+        from django.db import transaction
+        from django.utils import timezone
+        pending = Payout.objects.filter(status=Payout.PENDING)
+        count = pending.count()
+        for payout in pending:
+            with transaction.atomic():
+                payout.transition_to(Payout.PROCESSING)
+                payout.save(update_fields=['status', 'updated_at'])
+                payout.transition_to(Payout.COMPLETED)
+                payout.processed_at = timezone.now()
+                payout.save()
+                LedgerEntry.objects.create(
+                    merchant=payout.merchant,
+                    entry_type=LedgerEntry.DEBIT,
+                    amount_paise=payout.amount_paise,
+                    description=f"Payout to {payout.bank_account_id}",
+                    reference_id=str(payout.id),
+                )
+        return Response({'processed': count})
